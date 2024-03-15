@@ -324,7 +324,7 @@ static const struct drm_dsc_config fhd_pps_config = {
 #define HK3_TE_USEC_AOD 693
 #define HK3_TE_USEC_120HZ 273
 #define HK3_TE_USEC_60HZ_HS 8500
-#define HK3_TE_USEC_60HZ_NS 546
+#define HK3_TE_USEC_60HZ_NS 1223
 #define HK3_TE_PERIOD_DELTA_TOLERANCE_USEC 2000
 
 #define MIPI_DSI_FREQ_MBPS_DEFAULT 1368
@@ -594,15 +594,22 @@ static void hk3_set_panel_feat(struct exynos_panel *ctx, const u32 vrefresh,
 					   (peak_vrefresh == vrefresh ? 0x00 : 0x01));
 			/* Set fixed TE width */
 			EXYNOS_DCS_BUF_ADD(ctx, 0xB0, 0x00, 0x08, 0xB9);
-			EXYNOS_DCS_BUF_ADD(ctx, 0xB9, 0x0B, 0xBB, 0x00, 0x2F,
-			   0x0B, 0xBB, 0x00, 0x2F);
+			if (test_bit(FEAT_OP_NS, feat)) {
+				EXYNOS_DCS_BUF_ADD(ctx, 0xB9, 0x0B, 0x43, 0x00, 0x2F,
+					0x0B, 0x43, 0x00, 0x2F);
+			} else {
+				EXYNOS_DCS_BUF_ADD(ctx, 0xB9, 0x0B, 0xBB, 0x00, 0x2F,
+					0x0B, 0xBB, 0x00, 0x2F);
+			}
 		} else {
 			/* Changeable TE */
 			EXYNOS_DCS_BUF_ADD(ctx, 0xB9, 0x04);
 			/* Changeable TE width setting and frequency */
 			EXYNOS_DCS_BUF_ADD(ctx, 0xB0, 0x00, 0x04, 0xB9);
-			/* width 273us in normal mode */
-			EXYNOS_DCS_BUF_ADD(ctx, 0xB9, 0x0B, 0xBB, 0x00, 0x2F);
+			if (test_bit(FEAT_OP_NS, feat))
+				EXYNOS_DCS_BUF_ADD(ctx, 0xB9, 0x0B, 0x43, 0x00, 0x2F);
+			else
+				EXYNOS_DCS_BUF_ADD(ctx, 0xB9, 0x0B, 0xBB, 0x00, 0x2F);
 		}
 	}
 
