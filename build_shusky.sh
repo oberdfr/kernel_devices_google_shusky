@@ -18,5 +18,4 @@ exec tools/bazel run \
     ${parameters} \
     --config=stamp \
     --config=shusky \
-    --config=fast \
     //private/devices/google/shusky:zuma_shusky_dist "$@"
