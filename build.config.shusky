@@ -9,6 +9,7 @@ FRAGMENT_CONFIG=${DEVICE_DIR}/shusky_gki.fragment
 
 DTC_INCLUDE="${ROOT_DIR}/${SOC_DIR}/include/dtc \
     ${ROOT_DIR}/${KERNEL_DIR}/include \
-    include"
+    include \
+    ${ROOT_DIR}/private/devices/google/shusky/dts/google"
 
 MKDTIMG_FLAGS="--page_size=4096 --id=/:board_id --rev=/:board_rev"
