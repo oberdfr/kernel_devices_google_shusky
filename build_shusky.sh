@@ -19,8 +19,6 @@ fi
 for arg in "$@"; do
   if [[ "$arg" == "--page_size=16k" ]]; then
     parameters+=" --page_size=16k"
-    parameters+=" --config=fast"
-    parameters+=" --config=pixel_debug_common"
     parameters+=" --config=no_download_gki"
     parameters+=" --config=no_download_gki_fips140"
   else
