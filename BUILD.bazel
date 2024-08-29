@@ -9,6 +9,7 @@ load(
     "kernel_abi",
     "kernel_build",
     "kernel_build_config",
+    "kernel_dtstree",
     "kernel_images",
     "kernel_module",
     "kernel_module_group",
@@ -26,6 +27,14 @@ kernel_build_config(
         "//common:set_kernel_dir_build_config",
         "build.config.shusky",
     ],
+)
+
+kernel_dtstree(
+    name = "dtstree",
+    srcs = glob(["dts/**"]) + [
+        "//private/google-modules/soc/gs:gs.dt-bindings",
+    ],
+    makefile = "dts/Makefile",
 )
 
 filegroup(
@@ -60,29 +69,28 @@ _SOC_REVS = [
 ]
 
 _SHUSKY_DTBOS = [
-    # Sync with build.config.shusky
-    "google/zuma-ripcurrent.dtbo",
-    "google/zuma-husky-proto1.dtbo",
-    "google/zuma-husky-proto1-wingboard.dtbo",
-    "google/zuma-husky-proto1_1.dtbo",
-    "google/zuma-husky-evt1.dtbo",
-    "google/zuma-husky-evt1_1.dtbo",
-    "google/zuma-husky-dvt1.dtbo",
-    "google/zuma-husky-pvt1.dtbo",
-    "google/zuma-husky-mp.dtbo",
-    "google/zuma-shiba-proto1.dtbo",
-    "google/zuma-shiba-proto1-wingboard.dtbo",
-    "google/zuma-shiba-proto1_1.dtbo",
-    "google/zuma-shiba-evt1.dtbo",
-    "google/zuma-shiba-evt1_b0.dtbo",
-    "google/zuma-shiba-evt1_1.dtbo",
-    "google/zuma-shiba-evt1_1-wingboard.dtbo",
-    "google/zuma-shiba-dvt1.dtbo",
-    "google/zuma-shiba-pvt1.dtbo",
-    "google/zuma-shiba-mp.dtbo",
-    "google/google-dts-zuma/zuma-dpm-eng.dtbo",
-    "google/google-dts-zuma/zuma-dpm-user.dtbo",
-    "google/google-dts-zuma/zuma-dpm-userdebug.dtbo",
+    "zuma-ripcurrent.dtbo",
+    "zuma-husky-proto1.dtbo",
+    "zuma-husky-proto1-wingboard.dtbo",
+    "zuma-husky-proto1_1.dtbo",
+    "zuma-husky-evt1.dtbo",
+    "zuma-husky-evt1_1.dtbo",
+    "zuma-husky-dvt1.dtbo",
+    "zuma-husky-pvt1.dtbo",
+    "zuma-husky-mp.dtbo",
+    "zuma-shiba-proto1.dtbo",
+    "zuma-shiba-proto1-wingboard.dtbo",
+    "zuma-shiba-proto1_1.dtbo",
+    "zuma-shiba-evt1.dtbo",
+    "zuma-shiba-evt1_b0.dtbo",
+    "zuma-shiba-evt1_1.dtbo",
+    "zuma-shiba-evt1_1-wingboard.dtbo",
+    "zuma-shiba-dvt1.dtbo",
+    "zuma-shiba-pvt1.dtbo",
+    "zuma-shiba-mp.dtbo",
+    "zuma/zuma-dpm-eng.dtbo",
+    "zuma/zuma-dpm-user.dtbo",
+    "zuma/zuma-dpm-userdebug.dtbo",
 ]
 
 kernel_module_group(
@@ -153,7 +161,7 @@ kernel_build(
         "//private/google-modules/wlan/wlan_ptracker:wlan_ptracker.kconfig",
     ],
     outs = [
-        "google/google-dts-zuma/zuma-{}.dtb".format(soc_rev)
+        "zuma/zuma-{}.dtb".format(soc_rev)
         for soc_rev in _SOC_REVS
     ] + _SHUSKY_DTBOS,
     base_kernel = "//common:kernel_aarch64_download_or_build",
@@ -163,7 +171,7 @@ kernel_build(
         "//private/devices/google/zuma:zuma_defconfig",
         "shusky_defconfig",
     ],
-    dtstree = "//private/devices/google/shusky/dts:shusky.dt",
+    dtstree = ":dtstree",
     kconfig_ext = "Kconfig.ext",
     kmi_symbol_list = "//common:android/abi_gki_aarch64_pixel",
     make_goals = _PIXEL_MAKE_GOALS,
