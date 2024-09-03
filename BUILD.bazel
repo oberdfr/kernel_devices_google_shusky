@@ -14,7 +14,7 @@ load(
     "merged_kernel_uapi_headers",
 )
 load("//private/devices/google/common/kleaf:create_file.bzl", "create_file")
-load("//private/devices/google/zuma:constants.bzl", "ZUMA_DTBS", "ZUMA_MODULE_OUTS")
+load("//private/devices/google/zuma:constants.bzl", "ZUMA_DPM_DTBOS", "ZUMA_DTBS", "ZUMA_MODULE_OUTS")
 load(":constants.bzl", "SHUSKY_DTBOS")
 
 kernel_build_config(
@@ -69,7 +69,7 @@ kernel_build(
     srcs = [":kernel_sources"],
     outs = [
         "zuma/{}".format(dtb)
-        for dtb in ZUMA_DTBS
+        for dtb in ZUMA_DTBS + ZUMA_DPM_DTBOS
     ] + SHUSKY_DTBOS,
     base_kernel = "//common:kernel_aarch64",
     build_config = ":build_config",

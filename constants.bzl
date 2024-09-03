@@ -24,7 +24,4 @@ SHUSKY_DTBOS = [
     "zuma-shiba-dvt1.dtbo",
     "zuma-shiba-pvt1.dtbo",
     "zuma-shiba-mp.dtbo",
-    "zuma/zuma-dpm-eng.dtbo",
-    "zuma/zuma-dpm-user.dtbo",
-    "zuma/zuma-dpm-userdebug.dtbo",
 ]
