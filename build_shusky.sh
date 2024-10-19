@@ -1,6 +1,8 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0
 
+BUILD_AOSP_KERNEL=1
+
 parameters=
 if [ "${BUILD_AOSP_KERNEL}" = "1" ]; then
   echo "WARNING: BUILD_AOSP_KERNEL is deprecated." \
