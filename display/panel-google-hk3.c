@@ -181,13 +181,13 @@ struct hk3_panel {
 
 #define to_spanel(ctx) container_of(ctx, struct hk3_panel, base)
 
-/* 1344x2992 */
+/* DSCv1.2a 1344x2992 */
 static const struct drm_dsc_config wqhd_pps_config = {
 	.line_buf_depth = 9,
 	.bits_per_component = 8,
 	.convert_rgb = true,
 	.slice_width = 672,
-	.slice_height = 187,
+	.slice_height = 34,
 	.simple_422 = false,
 	.pic_width = 1344,
 	.pic_height = 2992,
@@ -230,13 +230,13 @@ static const struct drm_dsc_config wqhd_pps_config = {
 	.flatness_max_qp = 12,
 	.initial_scale_value = 32,
 	.scale_decrement_interval = 9,
-	.scale_increment_interval = 5177,
-	.nfl_bpg_offset = 133,
-	.slice_bpg_offset = 112,
+	.scale_increment_interval = 932,
+	.nfl_bpg_offset = 745,
+	.slice_bpg_offset = 616,
 	.final_offset = 4336,
 	.vbr_enable = false,
 	.slice_chunk_size = 672,
-	.dsc_version_minor = 1,
+	.dsc_version_minor = 2,
 	.dsc_version_major = 1,
 	.native_422 = false,
 	.native_420 = false,
@@ -245,13 +245,13 @@ static const struct drm_dsc_config wqhd_pps_config = {
 	.second_line_offset_adj = 0,
 };
 
-/* 1008x2244 */
+/* DSCv1.2a 1008x2244 */
 static const struct drm_dsc_config fhd_pps_config = {
 	.line_buf_depth = 9,
 	.bits_per_component = 8,
 	.convert_rgb = true,
 	.slice_width = 504,
-	.slice_height = 187,
+	.slice_height = 34,
 	.simple_422 = false,
 	.pic_width = 1008,
 	.pic_height = 2244,
@@ -294,13 +294,13 @@ static const struct drm_dsc_config fhd_pps_config = {
 	.flatness_max_qp = 12,
 	.initial_scale_value = 32,
 	.scale_decrement_interval = 7,
-	.scale_increment_interval = 4482,
-	.nfl_bpg_offset = 133,
-	.slice_bpg_offset = 150,
+	.scale_increment_interval = 810,
+	.nfl_bpg_offset = 745,
+	.slice_bpg_offset = 821,
 	.final_offset = 4336,
 	.vbr_enable = false,
 	.slice_chunk_size = 504,
-	.dsc_version_minor = 1,
+	.dsc_version_minor = 2,
 	.dsc_version_major = 1,
 	.native_422 = false,
 	.native_420 = false,
@@ -1735,6 +1735,20 @@ static void hk3_negative_field_setting(struct exynos_panel *ctx)
 	EXYNOS_DCS_BUF_ADD_SET_AND_FLUSH(ctx, lock_cmd_f0);
 }
 
+static int hk3_dcs_write_dsc_config(struct exynos_panel *ctx, const struct drm_dsc_config *dsc_cfg)
+{
+	struct drm_dsc_picture_parameter_set pps;
+	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
+	int ret;
+
+	drm_dsc_pps_payload_pack(&pps, dsc_cfg);
+	ret = mipi_dsi_picture_parameter_set(dsi, &pps);
+	if (ret < 0) {
+		dev_err(ctx->dev, "failed to write pps(%d)\n", ret);
+	}
+	return ret;
+}
+
 static int hk3_enable(struct drm_panel *panel)
 {
 	struct exynos_panel *ctx = container_of(panel, struct exynos_panel, panel);
@@ -1743,7 +1757,6 @@ static int hk3_enable(struct drm_panel *panel)
 	struct hk3_panel *spanel = to_spanel(ctx);
 	const bool needs_reset = !is_panel_enabled(ctx);
 	bool is_ns = needs_reset ? false : test_bit(FEAT_OP_NS, spanel->feat);
-	struct drm_dsc_picture_parameter_set pps_payload;
 	bool is_fhd;
 	u32 vrefresh;
 
@@ -1776,10 +1789,8 @@ static int hk3_enable(struct drm_panel *panel)
 
 	/* DSC related configuration */
 	PANEL_SEQ_LABEL_BEGIN("pps");
-	drm_dsc_pps_payload_pack(&pps_payload,
-				 is_fhd ? &fhd_pps_config : &wqhd_pps_config);
 	EXYNOS_DCS_WRITE_SEQ(ctx, 0x9D, 0x01);
-	EXYNOS_PPS_WRITE_BUF(ctx, &pps_payload);
+	hk3_dcs_write_dsc_config(ctx, is_fhd ? &fhd_pps_config : &wqhd_pps_config);
 	PANEL_SEQ_LABEL_END("pps");
 
 	if (needs_reset) {
@@ -2294,14 +2305,14 @@ static const int hk3_lp_vrefresh_range[] = {
 	.enabled = true,\
 	.dsc_count = 2,\
 	.slice_count = 2,\
-	.slice_height = 187,\
+	.slice_height = 34,\
 	.cfg = &wqhd_pps_config,\
 }
 #define HK3_FHD_DSC {\
 	.enabled = true,\
 	.dsc_count = 2,\
 	.slice_count = 2,\
-	.slice_height = 187,\
+	.slice_height = 34,\
 	.cfg = &fhd_pps_config,\
 }
 
