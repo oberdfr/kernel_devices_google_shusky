@@ -1735,7 +1735,7 @@ static void hk3_negative_field_setting(struct exynos_panel *ctx)
 	EXYNOS_DCS_BUF_ADD_SET_AND_FLUSH(ctx, lock_cmd_f0);
 }
 
-static int hk3_dcs_write_dsc_config(struct exynos_panel *ctx, const struct drm_dsc_config *dsc_cfg)
+static int hk3_write_dsc_config(struct exynos_panel *ctx, const struct drm_dsc_config *dsc_cfg)
 {
 	struct drm_dsc_picture_parameter_set pps;
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
@@ -1790,7 +1790,7 @@ static int hk3_enable(struct drm_panel *panel)
 	/* DSC related configuration */
 	PANEL_SEQ_LABEL_BEGIN("pps");
 	EXYNOS_DCS_WRITE_SEQ(ctx, 0x9D, 0x01);
-	hk3_dcs_write_dsc_config(ctx, is_fhd ? &fhd_pps_config : &wqhd_pps_config);
+	hk3_write_dsc_config(ctx, is_fhd ? &fhd_pps_config : &wqhd_pps_config);
 	PANEL_SEQ_LABEL_END("pps");
 
 	if (needs_reset) {
@@ -2182,6 +2182,10 @@ static void hk3_get_panel_rev(struct exynos_panel *ctx, u32 id)
 	exynos_panel_get_panel_rev(ctx, rev);
 
 	hk3_get_panel_material(ctx, id);
+
+	/* re-init dsc settings to override bootloader */
+	EXYNOS_DCS_WRITE_SEQ(ctx, 0x9D, 0x01);
+	hk3_write_dsc_config(ctx, &wqhd_pps_config);
 }
 
 static void hk3_normal_mode_work(struct exynos_panel *ctx)
